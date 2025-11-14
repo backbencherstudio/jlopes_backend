@@ -439,6 +439,7 @@ model team {
   id          String   @id @default(cuid())
   created_at  DateTime @default(now())
   updated_at  DateTime @default(now())
+  avatar      String
   name        String
   title       String
   description String
