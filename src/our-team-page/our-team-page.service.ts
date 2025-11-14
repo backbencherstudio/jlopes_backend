@@ -114,6 +114,17 @@ export class OurTeamPageService {
 
   async update(id: string, updateOurTeamPageDto: UpdateOurTeamPageDto) {
     try {
+      const exists = await this.prisma.team.findUnique({
+        where: { id },
+      });
+
+      if (!exists) {
+        return {
+          success: false,
+          message: 'Team member not found',
+        };
+      }
+
       const result = await this.prisma.team.update({
         where: { id },
         data: {
@@ -134,7 +145,35 @@ export class OurTeamPageService {
     }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} ourTeamPage`;
+  async remove(id: string) {
+    try {
+      const exists = await this.prisma.team.findUnique({
+        where: { id },
+      });
+
+      if (!exists) {
+        return {
+          success: false,
+          message: 'Team member not found',
+        };
+      }
+
+      const result = await this.prisma.team.delete({
+        where: {
+          id,
+        },
+      });
+
+      return {
+        success: true,
+        message: 'Team member is deleted successfully',
+        data: result,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 }

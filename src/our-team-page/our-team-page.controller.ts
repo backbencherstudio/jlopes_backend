@@ -74,7 +74,7 @@ export class OurTeamPageController {
 
   @ApiOperation({ summary: 'Update team member' })
   @Patch(':id')
- async update(
+  async update(
     @Param('id') id: string,
     @Body() updateOurTeamPageDto: UpdateOurTeamPageDto,
   ) {
@@ -88,8 +88,16 @@ export class OurTeamPageController {
     }
   }
 
+  @ApiOperation({ summary: 'Remove team member' })
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.ourTeamPageService.remove(+id);
+  async remove(@Param('id') id: string) {
+    try {
+      return await this.ourTeamPageService.remove(id);
+    } catch (error) {
+      return {
+        success: false,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 }
