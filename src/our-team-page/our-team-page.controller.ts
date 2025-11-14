@@ -13,11 +13,11 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Request } from 'express';
 import { memoryStorage } from 'multer';
 import { CreateOurTeamPageDto } from './dto/create-our-team-page.dto';
 import { UpdateOurTeamPageDto } from './dto/update-our-team-page.dto';
 import { OurTeamPageService } from './our-team-page.service';
-import { Request } from 'express';
 @ApiTags('teams')
 @Controller('teams')
 export class OurTeamPageController {
@@ -61,16 +61,31 @@ export class OurTeamPageController {
 
   @ApiOperation({ summary: 'Get single team member' })
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.ourTeamPageService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    try {
+      return await this.ourTeamPageService.findOne(id);
+    } catch (error) {
+      return {
+        success: false,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 
+  @ApiOperation({ summary: 'Update team member' })
   @Patch(':id')
-  update(
+ async update(
     @Param('id') id: string,
     @Body() updateOurTeamPageDto: UpdateOurTeamPageDto,
   ) {
-    return this.ourTeamPageService.update(+id, updateOurTeamPageDto);
+    try {
+      return await this.ourTeamPageService.update(id, updateOurTeamPageDto);
+    } catch (error) {
+      return {
+        success: false,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 
   @Delete(':id')

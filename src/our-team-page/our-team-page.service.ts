@@ -57,9 +57,6 @@ export class OurTeamPageService {
   }
 
   async findAll(page: number, limit: number) {
-    console.log("🚀 ~ OurTeamPageService ~ findAll ~ limit:", limit)
-    console.log("🚀 ~ OurTeamPageService ~ findAll ~ page:", page)
-    
     try {
       const [result, totalCount] = await this.prisma.$transaction([
         // Implement pagination
@@ -77,7 +74,7 @@ export class OurTeamPageService {
 
       return {
         success: true,
-        message: 'Alll team members are successfully',
+        message: 'Alll team members are retrieved successfully',
         metaData: {
           currentPage: page,
           totalpages,
@@ -94,12 +91,47 @@ export class OurTeamPageService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} ourTeamPage`;
+  async findOne(id: string) {
+    try {
+      const result = await this.prisma.team.findUnique({
+        where: {
+          id,
+        },
+      });
+
+      return {
+        success: true,
+        message: 'Team member is retrieved successfully',
+        data: result,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 
-  update(id: number, updateOurTeamPageDto: UpdateOurTeamPageDto) {
-    return `This action updates a #${id} ourTeamPage`;
+  async update(id: string, updateOurTeamPageDto: UpdateOurTeamPageDto) {
+    try {
+      const result = await this.prisma.team.update({
+        where: { id },
+        data: {
+          ...updateOurTeamPageDto,
+        },
+      });
+
+      return {
+        success: true,
+        message: 'Team member is updated successfully',
+        data: result,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 
   remove(id: number) {
