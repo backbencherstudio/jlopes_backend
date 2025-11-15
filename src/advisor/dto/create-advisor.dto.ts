@@ -5,11 +5,17 @@ import {
   IsArray,
   IsEmail,
   IsNotEmpty,
+  IsOptional,
   IsString,
   ValidateNested,
 } from 'class-validator';
 
 export class StateCategoryDTO {
+  @ApiProperty({ example: 'clxxx123abc', required: false })
+  @IsString()
+  @IsOptional()
+  id?: string; // optional id for updating state categories
+
   @ApiProperty({ example: 'California' })
   @IsString()
   @IsNotEmpty()

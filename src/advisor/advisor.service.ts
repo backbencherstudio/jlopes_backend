@@ -1,4 +1,9 @@
-import { ConflictException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateAdvisorDto } from './dto/create-advisor.dto';
 import { UpdateAdvisorDto } from './dto/update-advisor.dto';
@@ -79,7 +84,7 @@ export class AdvisorService {
       return {
         success: true,
         statusCode: HttpStatus.OK,
-        message: 'Alll team members are retrieved successfully',
+        message: 'All advisors are retrieved successfully',
         metaData: {
           currentPage: page,
           totalPages,
@@ -97,12 +102,137 @@ export class AdvisorService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} advisor`;
+  async findOne(email: string) {
+    try {
+      const result = await this.prisma.advisor.findUnique({
+        where: {
+          email: email,
+        },
+        include: {
+          stateCategories: true,
+        },
+      });
+      return {
+        success: true,
+        statusCode: HttpStatus.OK,
+        message: 'Advsior is retrieved successfully',
+        data: result,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 
-  update(id: number, updateAdvisorDto: UpdateAdvisorDto) {
-    return `This action updates a #${id} advisor`;
+  async update(id: string, updateAdvisorDto: UpdateAdvisorDto) {
+    try {
+      // Check if the advisor exists
+      const existingAdvisor = await this.prisma.advisor.findUnique({
+        where: {
+          id,
+        },
+      });
+      if (!existingAdvisor) {
+        throw new NotFoundException('Advsior is not found');
+      }
+
+      // Check if the email is unique while updating
+      if (
+        updateAdvisorDto.email &&
+        updateAdvisorDto.email !== existingAdvisor.email
+      ) {
+        const existingEmail = await this.prisma.advisor.findUnique({
+          where: {
+            email: updateAdvisorDto.email,
+          },
+        });
+        if (existingEmail) {
+          throw new ConflictException('Email already exists');
+        }
+      }
+
+      // Update the state category
+      const updatedStateCategory = updateAdvisorDto.stateCategories
+        .filter((category) => category.id)
+        .map((category) => {
+          return this.prisma.stateCategory.update({
+            where: {
+              id: category.id,
+            },
+            data: {
+              state: category.state,
+              zip: category.zip,
+            },
+          });
+        });
+
+      // Update Advisor and State Category together
+      await this.prisma.$transaction([
+        this.prisma.advisor.update({
+          where: {
+            id,
+          },
+          data: {
+            name: updateAdvisorDto.name,
+            email: updateAdvisorDto.email,
+            phone: updateAdvisorDto.phone,
+          },
+        }),
+        ...updatedStateCategory,
+      ]);
+
+      // const result = await this.prisma.advisor.update({
+      //   where: {
+      //     id,
+      //   },
+      //   data: {
+      //     name: updateAdvisorDto.name,
+      //     email: updateAdvisorDto.email,
+      //     phone: updateAdvisorDto.phone,
+      //     stateCategories: {
+      //       update: updateAdvisorDto.stateCategories
+      //         .filter((category) => category.id)
+      //         .map((category) => ({
+      //           where: {
+      //             id: category.id,
+      //              advisor_id: id,
+      //           },
+      //           data: {
+      //             state: category.state,
+      //             zip: category.zip,
+      //           },
+      //         })),
+      //     },
+      //   },
+      //   include: {
+      //     stateCategories: true,
+      //   },
+      // });
+
+      const result = await this.prisma.advisor.findUnique({
+        where: {
+          id,
+        },
+        include: {
+          stateCategories: true,
+        },
+      });
+      return {
+        success: true,
+        statusCode: HttpStatus.OK,
+        message: 'Advsior is retrieved successfully',
+        data: result,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 
   remove(id: number) {

@@ -49,14 +49,33 @@ export class AdvisorController {
     }
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.advisorService.findOne(+id);
+  @Get(':email')
+  async findOne(@Param('email') email: string) {
+    try {
+      return await this.advisorService.findOne(email);
+    } catch (error) {
+      return {
+        success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAdvisorDto: UpdateAdvisorDto) {
-    return this.advisorService.update(+id, updateAdvisorDto);
+  async update(
+    @Param('id') id: string,
+    @Body() updateAdvisorDto: UpdateAdvisorDto,
+  ) {
+    try {
+      return this.advisorService.update(id, updateAdvisorDto);
+    } catch (error) {
+      return {
+        success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 
   @Delete(':id')
