@@ -455,7 +455,7 @@ model StateCategory {
   zip        String
 
   advisor_id String
-  advisor    Advisor @relation(fields: [advisor_id], references: [id])
+  advisor    Advisor @relation(fields: [advisor_id], references: [id], onDelete: Cascade)
 
   @@map("stateCategories")
 }

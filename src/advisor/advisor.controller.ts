@@ -79,7 +79,15 @@ export class AdvisorController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.advisorService.remove(+id);
+  async remove(@Param('id') id: string) {
+    try {
+      return this.advisorService.remove(id);
+    } catch (error) {
+      return {
+        success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 }
