@@ -20,8 +20,8 @@ import { ApplicationModule } from './modules/application/application.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { ChatModule } from './modules/chat/chat.module';
 import { PaymentModule } from './modules/payment/payment.module';
-import { OurTeamPageModule } from './our-team-page/our-team-page.module';
-import { AdvisorModule } from './advisor/advisor.module';
+import { OurTeamPageModule } from './modules/our-team-page/our-team-page.module';
+import { AdvisorModule } from './modules/advisor/advisor.module';
 
 @Module({
   imports: [
