@@ -18,7 +18,7 @@ import { memoryStorage } from 'multer';
 import { CreateOurTeamPageDto } from './dto/create-our-team-page.dto';
 import { UpdateOurTeamPageDto } from './dto/update-our-team-page.dto';
 import { OurTeamPageService } from './our-team-page.service';
-@ApiTags('teams')
+@ApiTags('Team')
 @Controller('teams')
 export class OurTeamPageController {
   constructor(private readonly ourTeamPageService: OurTeamPageService) {}
@@ -46,7 +46,7 @@ export class OurTeamPageController {
 
   @ApiOperation({ summary: 'Get all team members' })
   @Get()
-  async findAll(@Query() query: any, @Req() req: Request) {
+  async findAll(@Query() query: any) {
     try {
       const page = parseInt(query.page) || 1;
       const limit = parseInt(query.limit) || 3;

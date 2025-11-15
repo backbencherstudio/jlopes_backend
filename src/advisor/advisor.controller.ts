@@ -1,20 +1,52 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AdvisorService } from './advisor.service';
 import { CreateAdvisorDto } from './dto/create-advisor.dto';
 import { UpdateAdvisorDto } from './dto/update-advisor.dto';
 
-@Controller('advisor')
+@ApiTags('Advisor')
+@Controller('advisors')
 export class AdvisorController {
   constructor(private readonly advisorService: AdvisorService) {}
 
+  @ApiOperation({ summary: 'Create a advisor with state categories' })
   @Post()
-  create(@Body() createAdvisorDto: CreateAdvisorDto) {
-    return this.advisorService.create(createAdvisorDto);
+  async create(@Body() createAdvisorDto: CreateAdvisorDto) {
+    try {
+      return await this.advisorService.create(createAdvisorDto);
+    } catch (error) {
+      return {
+        success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 
+  @ApiOperation({ summary: 'Get all advisors' })
   @Get()
-  findAll() {
-    return this.advisorService.findAll();
+  async findAll(@Query() query: any) {
+    try {
+      const page = parseInt(query.page) || 1;
+      const limit = parseInt(query.limit) || 3;
+      return await this.advisorService.findAll(page, limit);
+    } catch (error) {
+      return {
+        success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 
   @Get(':id')
