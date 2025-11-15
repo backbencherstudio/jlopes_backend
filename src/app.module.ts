@@ -21,6 +21,7 @@ import { AdminModule } from './modules/admin/admin.module';
 import { ChatModule } from './modules/chat/chat.module';
 import { PaymentModule } from './modules/payment/payment.module';
 import { OurTeamPageModule } from './our-team-page/our-team-page.module';
+import { AdvisorModule } from './advisor/advisor.module';
 
 @Module({
   imports: [
@@ -76,6 +77,7 @@ import { OurTeamPageModule } from './our-team-page/our-team-page.module';
     ChatModule,
     PaymentModule,
     OurTeamPageModule,
+    AdvisorModule,
   ],
   controllers: [AppController],
   providers: [

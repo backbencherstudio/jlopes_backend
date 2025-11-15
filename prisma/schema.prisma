@@ -435,7 +435,7 @@ model UserSetting {
 //   @@map("posts")
 // }
 
-model team {
+model Team {
   id          String   @id @default(cuid())
   created_at  DateTime @default(now())
   updated_at  DateTime @default(now())
@@ -443,4 +443,32 @@ model team {
   name        String
   title       String
   description String
+
+  @@map("teams")
+}
+
+model StateCategory {
+  id         String   @id @default(cuid())
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+  state      String
+  zip        String
+
+  advisor_id String
+  advisor    Advisor @relation(fields: [advisor_id], references: [id])
+
+  @@map("stateCategories")
+}
+
+model Advisor {
+  id         String   @id @default(cuid())
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+  name       String
+  email      String   @unique
+  phone      String
+
+  stateCategories StateCategory[]
+
+  @@map("advisors")
 }
