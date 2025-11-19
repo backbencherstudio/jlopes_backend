@@ -3,9 +3,11 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Param,
   Patch,
   Post,
+  Query,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
@@ -32,15 +34,34 @@ export class TestimonialsController {
     @Body() createTestimonialDto: CreateTestimonialDto,
     @UploadedFiles() images: Express.Multer.File[],
   ) {
-    return this.testimonialsService.createTestimonials(
-      createTestimonialDto,
-      images,
-    );
+    try {
+      return this.testimonialsService.createTestimonials(
+        createTestimonialDto,
+        images,
+      );
+    } catch (error) {
+      return {
+        success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 
+  @ApiOperation({ summary: 'Find all testimonials' })
   @Get()
-  findAll() {
-    return this.testimonialsService.findAll();
+  async findAll(@Query() query: any) {
+    try {
+      const page = parseInt(query.page) || 1;
+      const limit = parseInt(query.limit) || 3;
+      return await this.testimonialsService.findAllTestimonials(page, limit);
+    } catch (error) {
+      return {
+        success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 
   @Get(':id')

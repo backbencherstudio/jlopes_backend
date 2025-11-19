@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { StringHelper } from 'src/common/helper/string.helper';
 import { SojebStorage } from 'src/common/lib/Disk/SojebStorage';
 import appConfig from 'src/config/app.config';
@@ -45,12 +45,14 @@ export class OurTeamPageService {
 
       return {
         success: true,
+        statusCode: HttpStatus.CREATED,
         message: 'Team member is created successfully',
         data: result,
       };
     } catch (error) {
       return {
         success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
         message: error?.message || 'Something went wrong',
       };
     }
@@ -70,14 +72,15 @@ export class OurTeamPageService {
       ]);
 
       // Calculate total pages
-      const totalpages = Math.ceil(totalCount / limit);
+      const totalPages = Math.ceil(totalCount / limit);
 
       return {
         success: true,
+        statusCode: HttpStatus.OK,
         message: 'Alll team members are retrieved successfully',
         metaData: {
           currentPage: page,
-          totalpages,
+          totalPages,
           totalCount,
           limit,
         },
@@ -86,6 +89,7 @@ export class OurTeamPageService {
     } catch (error) {
       return {
         success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
         message: error?.message || 'Something went wrong',
       };
     }
@@ -101,12 +105,14 @@ export class OurTeamPageService {
 
       return {
         success: true,
+        statusCode: HttpStatus.OK,
         message: 'Team member is retrieved successfully',
         data: result,
       };
     } catch (error) {
       return {
         success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
         message: error?.message || 'Something went wrong',
       };
     }
@@ -134,12 +140,14 @@ export class OurTeamPageService {
 
       return {
         success: true,
+        statusCode: HttpStatus.OK,
         message: 'Team member is updated successfully',
         data: result,
       };
     } catch (error) {
       return {
         success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
         message: error?.message || 'Something went wrong',
       };
     }
@@ -166,12 +174,14 @@ export class OurTeamPageService {
 
       return {
         success: true,
+        statusCode: HttpStatus.OK,
         message: 'Team member is deleted successfully',
         data: result,
       };
     } catch (error) {
       return {
         success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
         message: error?.message || 'Something went wrong',
       };
     }

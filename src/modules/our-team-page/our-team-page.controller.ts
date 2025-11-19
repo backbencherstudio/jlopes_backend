@@ -3,17 +3,16 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Param,
   Patch,
   Post,
   Query,
-  Req,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Request } from 'express';
 import { memoryStorage } from 'multer';
 import { CreateOurTeamPageDto } from './dto/create-our-team-page.dto';
 import { UpdateOurTeamPageDto } from './dto/update-our-team-page.dto';
@@ -39,6 +38,7 @@ export class OurTeamPageController {
     } catch (error) {
       return {
         success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
         message: error?.message || 'Something went wrong',
       };
     }
@@ -54,6 +54,7 @@ export class OurTeamPageController {
     } catch (error) {
       return {
         success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
         message: error?.message || 'Something went wrong',
       };
     }
@@ -67,6 +68,7 @@ export class OurTeamPageController {
     } catch (error) {
       return {
         success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
         message: error?.message || 'Something went wrong',
       };
     }
@@ -83,6 +85,7 @@ export class OurTeamPageController {
     } catch (error) {
       return {
         success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
         message: error?.message || 'Something went wrong',
       };
     }
@@ -96,6 +99,7 @@ export class OurTeamPageController {
     } catch (error) {
       return {
         success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
         message: error?.message || 'Something went wrong',
       };
     }

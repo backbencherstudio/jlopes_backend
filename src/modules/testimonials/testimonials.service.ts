@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { StringHelper } from 'src/common/helper/string.helper';
 import { SojebStorage } from 'src/common/lib/Disk/SojebStorage';
 import appConfig from 'src/config/app.config';
@@ -62,19 +62,54 @@ export class TestimonialsService {
 
       return {
         success: true,
+        statusCode: HttpStatus.CREATED,
         message: 'Testimonial is created successfully',
         data: result,
       };
     } catch (error) {
       return {
         success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
         message: error?.message || 'Something went wrong',
       };
     }
   }
 
-  findAll() {
-    return `This action returns all testimonials`;
+  async findAllTestimonials(page: number, limit: number) {
+    try {
+      const [result, totalCount] = await this.prisma.$transaction([
+        // Implement Pagination
+        this.prisma.testimonial.findMany({
+          take: limit,
+          skip: (page - 1) * limit,
+        }),
+
+        // Count the records
+        this.prisma.testimonial.count(),
+      ]);
+
+      // Calculate total page
+      const totalPages = Math.ceil(totalCount / limit);
+
+      return {
+        success: true,
+        statusCode: HttpStatus.CREATED,
+        message: 'Testimonial is created successfully',
+        metaData: {
+          currentPage: page,
+          totalPages,
+          totalCount,
+          limit,
+        },
+        data: result,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 
   findOne(id: number) {
