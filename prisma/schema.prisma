@@ -451,8 +451,9 @@ model StateCategory {
   id         String   @id @default(cuid())
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
-  state      String
-  zip        String
+
+  state String
+  zip   String
 
   advisor_id String
   advisor    Advisor @relation(fields: [advisor_id], references: [id], onDelete: Cascade)
@@ -464,11 +465,34 @@ model Advisor {
   id         String   @id @default(cuid())
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
-  name       String
-  email      String   @unique
-  phone      String
+
+  name  String
+  email String @unique
+  phone String
 
   stateCategories StateCategory[]
 
   @@map("advisors")
+}
+
+// image [], 
+// name, 
+// bio,
+// title, 
+
+model Testimonial {
+  id         String   @id @default(cuid())
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  howWeHelped  String?
+  gapGuardian  String[]
+  result       String?
+  footer_title String?
+
+  name  String?
+  image String[]
+  bio   String?
+
+  @@map("testimonials")
 }
