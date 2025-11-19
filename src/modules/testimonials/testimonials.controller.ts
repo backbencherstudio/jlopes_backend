@@ -35,7 +35,7 @@ export class TestimonialsController {
     @UploadedFiles() images: Express.Multer.File[],
   ) {
     try {
-      return this.testimonialsService.createTestimonials(
+      return await this.testimonialsService.createTestimonials(
         createTestimonialDto,
         images,
       );
@@ -68,7 +68,7 @@ export class TestimonialsController {
   @Get(':id')
   async findOne(@Param('id') id: string) {
     try {
-      return this.testimonialsService.findOne(id);
+      return await this.testimonialsService.findOne(id);
     } catch (error) {
       return {
         success: false,
@@ -78,12 +78,31 @@ export class TestimonialsController {
     }
   }
 
+  @ApiOperation({ summary: 'Update testimonial' })
   @Patch(':id')
-  update(
+  @UseInterceptors(
+    FilesInterceptor('images', 5, {
+      storage: memoryStorage(),
+    }),
+  )
+  async update(
     @Param('id') id: string,
     @Body() updateTestimonialDto: UpdateTestimonialDto,
+    @UploadedFiles() images: Express.Multer.File[],
   ) {
-    return this.testimonialsService.update(+id, updateTestimonialDto);
+    try {
+      return await this.testimonialsService.update(
+        id,
+        updateTestimonialDto,
+        images,
+      );
+    } catch (error) {
+      return {
+        success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 
   @Delete(':id')

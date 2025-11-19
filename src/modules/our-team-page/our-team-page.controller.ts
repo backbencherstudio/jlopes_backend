@@ -76,12 +76,18 @@ export class OurTeamPageController {
 
   @ApiOperation({ summary: 'Update team member' })
   @Patch(':id')
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: memoryStorage(),
+    }),
+  )
   async update(
     @Param('id') id: string,
     @Body() updateOurTeamPageDto: UpdateOurTeamPageDto,
+    @UploadedFile() image: Express.Multer.File,
   ) {
     try {
-      return await this.ourTeamPageService.update(id, updateOurTeamPageDto);
+      return await this.ourTeamPageService.update(id, updateOurTeamPageDto, image);
     } catch (error) {
       return {
         success: false,

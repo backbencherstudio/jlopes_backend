@@ -118,8 +118,14 @@ export class OurTeamPageService {
     }
   }
 
-  async update(id: string, updateOurTeamPageDto: UpdateOurTeamPageDto) {
+  async update(
+    id: string,
+    updateOurTeamPageDto: UpdateOurTeamPageDto,
+    image: Express.Multer.File,
+  ) {
     try {
+      const data: any = {};
+
       const exists = await this.prisma.team.findUnique({
         where: { id },
       });
@@ -131,10 +137,57 @@ export class OurTeamPageService {
         };
       }
 
+      if (updateOurTeamPageDto.name) {
+        data.name = updateOurTeamPageDto.name;
+      }
+      if (updateOurTeamPageDto.title) {
+        data.title = updateOurTeamPageDto.title;
+      }
+      if (updateOurTeamPageDto.description) {
+        data.description = updateOurTeamPageDto.description;
+      }
+
+      if (image) {
+        if (exists.avatar) {
+          try {
+            // delete old image from storage
+            const oldImage = await this.prisma.team.findUnique({
+              where: {
+                id,
+              },
+              select: {
+                avatar: true,
+              },
+            });
+
+            if (oldImage.avatar) {
+              await SojebStorage.delete(
+                appConfig().storageUrl.avatar + oldImage.avatar,
+              );
+            }
+          } catch (error) {
+            return {
+              success: false,
+              statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+              message: error?.message || 'Error deleting old image',
+            };
+          }
+        }
+
+        // uoload file
+        const fileName = `${StringHelper.randomString()}${image.originalname}`;
+        await SojebStorage.put(
+          appConfig().storageUrl.avatar + fileName,
+          image.buffer,
+        );
+
+        data.avatar = fileName;
+      }
+
       const result = await this.prisma.team.update({
         where: { id },
         data: {
-          ...updateOurTeamPageDto,
+          ...data,
         },
       });
 
