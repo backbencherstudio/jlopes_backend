@@ -105,8 +105,17 @@ export class TestimonialsController {
     }
   }
 
+  @ApiOperation({ summary: 'Delete testimonial' })
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.testimonialsService.remove(+id);
+  async remove(@Param('id') id: string) {
+    try {
+      return await this.testimonialsService.remove(id);
+    } catch (error) {
+      return {
+        success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 }

@@ -228,7 +228,35 @@ export class TestimonialsService {
     }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} testimonial`;
+  async remove(id: string) {
+    try {
+      const existingTestimonial = await this.prisma.testimonial.findUnique({
+        where: {
+          id,
+        },
+      });
+      if (!existingTestimonial) {
+        throw new NotFoundException('Testimonial not found');
+      }
+
+      const result = await this.prisma.testimonial.delete({
+        where: {
+          id,
+        },
+      });
+
+      return {
+        success: true,
+        statusCode: HttpStatus.OK,
+        message: 'Testimonial is updated successfully',
+        data: result,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 }
