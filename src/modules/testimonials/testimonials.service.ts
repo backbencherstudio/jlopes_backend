@@ -94,7 +94,7 @@ export class TestimonialsService {
       return {
         success: true,
         statusCode: HttpStatus.CREATED,
-        message: 'Testimonial is created successfully',
+        message: 'All Testimonials are retrieved successfully',
         metaData: {
           currentPage: page,
           totalPages,
@@ -112,8 +112,24 @@ export class TestimonialsService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} testimonial`;
+  async findOne(id: string) {
+    try {
+      const result = await this.prisma.testimonial.findUnique({
+        where: { id },
+      });
+      return {
+        success: true,
+        statusCode: HttpStatus.CREATED,
+        message: 'Testimonial is retrieved successfully',
+        data: result,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 
   update(id: number, updateTestimonialDto: UpdateTestimonialDto) {

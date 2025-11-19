@@ -49,6 +49,7 @@ export class AdvisorController {
     }
   }
 
+  @ApiOperation({ summary: 'Get single advisor' })
   @Get(':email')
   async findOne(@Param('email') email: string) {
     try {
@@ -62,6 +63,7 @@ export class AdvisorController {
     }
   }
 
+  @ApiOperation({ summary: 'Update advisor' })
   @Patch(':id')
   async update(
     @Param('id') id: string,
@@ -78,6 +80,7 @@ export class AdvisorController {
     }
   }
 
+  @ApiOperation({ summary: 'Delete advisor' })
   @Delete(':id')
   async remove(@Param('id') id: string) {
     try {

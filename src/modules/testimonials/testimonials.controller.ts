@@ -64,9 +64,18 @@ export class TestimonialsController {
     }
   }
 
+  @ApiOperation({ summary: 'Find single testimonial' })
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.testimonialsService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    try {
+      return this.testimonialsService.findOne(id);
+    } catch (error) {
+      return {
+        success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 
   @Patch(':id')
