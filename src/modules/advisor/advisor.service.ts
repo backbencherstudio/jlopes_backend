@@ -72,6 +72,8 @@ export class AdvisorService {
           orderBy: {
             created_at: 'desc',
           },
+          take: limit,
+          skip: (page - 1) * limit,
         }),
 
         // Count the records

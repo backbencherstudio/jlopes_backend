@@ -23,6 +23,8 @@ import { ChatModule } from './modules/chat/chat.module';
 import { OurTeamPageModule } from './modules/our-team-page/our-team-page.module';
 import { PaymentModule } from './modules/payment/payment.module';
 import { TestimonialsModule } from './modules/testimonials/testimonials.module';
+import { PublicServModule } from './modules/public-serv/public-serv.module';
+import { SectorModule } from './modules/sector/sector.module';
 
 @Module({
   imports: [
@@ -80,6 +82,8 @@ import { TestimonialsModule } from './modules/testimonials/testimonials.module';
     OurTeamPageModule,
     AdvisorModule,
     TestimonialsModule,
+    PublicServModule,
+    SectorModule,
   ],
   controllers: [AppController],
   providers: [
