@@ -25,6 +25,8 @@ import { PaymentModule } from './modules/payment/payment.module';
 import { TestimonialsModule } from './modules/testimonials/testimonials.module';
 import { PublicServModule } from './modules/public-serv/public-serv.module';
 import { SectorModule } from './modules/sector/sector.module';
+import { ProfessionModule } from './modules/profession/profession.module';
+import { ContactUsModule } from './modules/contact-us/contact-us.module';
 
 @Module({
   imports: [
@@ -84,6 +86,8 @@ import { SectorModule } from './modules/sector/sector.module';
     TestimonialsModule,
     PublicServModule,
     SectorModule,
+    ProfessionModule,
+    ContactUsModule,
   ],
   controllers: [AppController],
   providers: [

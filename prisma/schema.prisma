@@ -523,3 +523,30 @@ model PublicServPrivateWealth {
 
   @@map("publicServs")
 }
+
+model Profession {
+  id         String   @id @default(cuid())
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  name      String      @unique
+  contactUs ContactUs[]
+
+  @@map("professions")
+}
+
+model ContactUs {
+  id         String   @id @default(cuid())
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  name    String
+  email   String @unique
+  phone   String
+  message String
+
+  profession_id String
+  profession    Profession @relation(fields: [profession_id], references: [id])
+
+  @@map("contactUs")
+}
