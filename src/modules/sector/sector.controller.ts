@@ -33,11 +33,12 @@ export class SectorController {
     }
   }
 
+  @ApiOperation({ summary: 'Get All Sectors' })
   @Get()
   async findAll(@Query() query: any) {
     try {
       const page = parseInt(query.page) || 1;
-      const limit = parseInt(query.limit) || 3;
+      const limit = parseInt(query.limit) || 4;
       return await this.sectorService.findAllSectors(page, limit);
     } catch (error) {
       return {
@@ -48,18 +49,48 @@ export class SectorController {
     }
   }
 
+  @ApiOperation({ summary: 'Get a Sector' })
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.sectorService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    try {
+      return await this.sectorService.findOne(id);
+    } catch (error) {
+      return {
+        success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 
+  @ApiOperation({ summary: 'Update Sector' })
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSectorDto: UpdateSectorDto) {
-    return this.sectorService.update(+id, updateSectorDto);
+  async update(
+    @Param('id') id: string,
+    @Body() updateSectorDto: UpdateSectorDto,
+  ) {
+    try {
+      return this.sectorService.update(id, updateSectorDto);
+    } catch (error) {
+      return {
+        success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 
+  @ApiOperation({ summary: 'Delete Sector' })
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.sectorService.remove(+id);
+  async remove(@Param('id') id: string) {
+    try {
+      return await this.sectorService.remove(id);
+    } catch (error) {
+      return {
+        success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 }

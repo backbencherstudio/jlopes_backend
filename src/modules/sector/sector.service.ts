@@ -64,15 +64,71 @@ export class SectorService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} sector`;
+  async findOne(id: string) {
+    try {
+      const result = await this.prisma.sector.findFirst({
+        where: {
+          id,
+        },
+      });
+
+      return {
+        success: true,
+        statusCode: HttpStatus.OK,
+        message: 'Sector is retrieved successfully',
+        data: result,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 
-  update(id: number, updateSectorDto: UpdateSectorDto) {
-    return `This action updates a #${id} sector`;
+  async update(id: string, updateSectorDto: UpdateSectorDto) {
+    try {
+      const result = await this.prisma.sector.update({
+        where: { id },
+        data: {
+          ...updateSectorDto,
+        },
+      });
+
+      return {
+        success: true,
+        statusCode: HttpStatus.OK,
+        message: 'Sector is updated successfully',
+        data: result,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} sector`;
+  async remove(id: string) {
+    try {
+      const result = await this.prisma.sector.delete({
+        where: { id },
+      });
+
+      return {
+        success: true,
+        statusCode: HttpStatus.OK,
+        message: 'Sector is removed successfully',
+        data: result,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 }
