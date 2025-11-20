@@ -1,4 +1,9 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateSectorDto } from './dto/create-sector.dto';
 import { UpdateSectorDto } from './dto/update-sector.dto';
@@ -9,6 +14,15 @@ export class SectorService {
 
   async createSector(createSectorDto: CreateSectorDto) {
     try {
+      const isSectorExists = await this.prisma.sector.findUnique({
+        where: {
+          name: createSectorDto.name,
+        },
+      });
+      if (isSectorExists) {
+        throw new ConflictException('SEctor already exists');
+      }
+
       const result = await this.prisma.sector.create({
         data: createSectorDto,
       });
@@ -89,6 +103,15 @@ export class SectorService {
 
   async update(id: string, updateSectorDto: UpdateSectorDto) {
     try {
+      const isSectorExists = await this.prisma.sector.findUnique({
+        where: {
+          id,
+        },
+      });
+      if (!isSectorExists) {
+        throw new NotFoundException('Sector does not exist');
+      }
+
       const result = await this.prisma.sector.update({
         where: { id },
         data: {
@@ -113,6 +136,15 @@ export class SectorService {
 
   async remove(id: string) {
     try {
+      const isSectorExists = await this.prisma.sector.findUnique({
+        where: {
+          id,
+        },
+      });
+      if (!isSectorExists) {
+        throw new NotFoundException('Sector does not exist');
+      }
+
       const result = await this.prisma.sector.delete({
         where: { id },
       });

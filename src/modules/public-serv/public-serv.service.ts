@@ -1,4 +1,9 @@
-import { ConflictException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreatePublicServDto } from './dto/create-public-serv.dto';
 import { UpdatePublicServDto } from './dto/update-public-serv.dto';
@@ -110,7 +115,7 @@ export class PublicServService {
           },
         });
       if (!isPublicServExists) {
-        throw new ConflictException('Public Serve does not exist');
+        throw new NotFoundException('Public Serv is not found');
       }
 
       const result = await this.prisma.publicServPrivateWealth.update({
@@ -146,7 +151,7 @@ export class PublicServService {
           },
         });
       if (!isPublicServExists) {
-        throw new ConflictException('Public Serve does not exist');
+        throw new NotFoundException('Public Serv is not found');
       }
 
       const result = await this.prisma.publicServPrivateWealth.delete({
