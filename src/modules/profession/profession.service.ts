@@ -1,26 +1,151 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProfessionDto } from './dto/create-profession.dto';
 import { UpdateProfessionDto } from './dto/update-profession.dto';
 
 @Injectable()
 export class ProfessionService {
-  create(createProfessionDto: CreateProfessionDto) {
-    return 'This action adds a new profession';
+  constructor(private readonly prisma: PrismaService) {}
+
+  async create(createProfessionDto: CreateProfessionDto) {
+    try {
+      const isProfessionExists = await this.prisma.profession.findUnique({
+        where: {
+          name: createProfessionDto.name,
+        },
+      });
+      if (isProfessionExists) {
+        throw new ConflictException('Profession already exists');
+      }
+
+      const result = await this.prisma.profession.create({
+        data: createProfessionDto,
+      });
+
+      return {
+        success: true,
+        statusCode: HttpStatus.OK,
+        message: 'Profession is created Successfully',
+        data: result,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 
-  findAll() {
-    return `This action returns all profession`;
+  async findAll(page: number, limit: number) {
+    try {
+      const [result, totalCount] = await this.prisma.$transaction([
+        // Implement pagination
+        this.prisma.profession.findMany({
+          take: limit,
+          skip: (page - 1) * limit,
+        }),
+
+        // Count the records
+        this.prisma.profession.count(),
+      ]);
+
+      // const result = await this.prisma.profession.findMany();
+      // const totalCount = await this.prisma.profession.count();
+
+      // Calculate total pages
+      const totalPages = Math.ceil(totalCount / limit);
+
+      return {
+        success: true,
+        statusCode: HttpStatus.OK,
+        message: 'All Professors are retrieved successfully',
+        metaData: {
+          currentPage: page,
+          totalPages,
+          totalCount,
+          limit,
+        },
+        data: result,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} profession`;
+  async findOne(id: string) {
+    try {
+      const result = await this.prisma.profession.findMany({
+        where: {
+          id,
+        },
+      });
+
+      return {
+        success: true,
+        statusCode: HttpStatus.OK,
+        message: 'Profession is retrieved Successfully',
+        data: result,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 
-  update(id: number, updateProfessionDto: UpdateProfessionDto) {
-    return `This action updates a #${id} profession`;
+  /* 
+  Error Alert:
+  =============
+  Too many database connections opened
+  */
+  async update(id: string, updateProfessionDto: UpdateProfessionDto) {
+    try {
+      const isProfessorExists = await this.prisma.profession.findUnique({
+        where: {
+          id,
+        },
+      });
+      if (!isProfessorExists) {
+        throw new NotFoundException('Profession does not exist');
+      }
+
+      const result = await this.prisma.profession.update({
+        where: {
+          id,
+        },
+        data: {
+          ...updateProfessionDto,
+        },
+      });
+
+      return {
+        success: true,
+        statusCode: HttpStatus.OK,
+        message: 'Profession is updated Successfully',
+        data: result,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return `This action removes a #${id} profession`;
   }
 }

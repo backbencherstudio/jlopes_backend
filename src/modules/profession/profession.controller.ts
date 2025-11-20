@@ -1,34 +1,87 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ProfessionService } from './profession.service';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateProfessionDto } from './dto/create-profession.dto';
 import { UpdateProfessionDto } from './dto/update-profession.dto';
+import { ProfessionService } from './profession.service';
 
-@Controller('profession')
+@ApiTags('Profession')
+@Controller('professions')
 export class ProfessionController {
   constructor(private readonly professionService: ProfessionService) {}
 
+  @ApiOperation({ summary: 'Create Profession' })
   @Post()
-  create(@Body() createProfessionDto: CreateProfessionDto) {
-    return this.professionService.create(createProfessionDto);
+  async create(@Body() createProfessionDto: CreateProfessionDto) {
+    try {
+      return await this.professionService.create(createProfessionDto);
+    } catch (error) {
+      return {
+        success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 
+  @ApiOperation({ summary: 'Get All Professions' })
   @Get()
-  findAll() {
-    return this.professionService.findAll();
+  async findAll(@Query() query: any) {
+    try {
+      const page = parseInt(query.page) || 1;
+      const limit = parseInt(query.limit) || 10;
+      return await this.professionService.findAll(page, limit);
+    } catch (error) {
+      return {
+        success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 
+  @ApiOperation({ summary: 'Get Single Professor' })
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.professionService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    try {
+      return await this.professionService.findOne(id);
+    } catch (error) {
+      return {
+        success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 
+  @ApiOperation({ summary: 'Update Professor' })
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProfessionDto: UpdateProfessionDto) {
-    return this.professionService.update(+id, updateProfessionDto);
+  async update(
+    @Param('id') id: string,
+    @Body() updateProfessionDto: UpdateProfessionDto,
+  ) {
+    try {
+      return await this.professionService.update(id, updateProfessionDto);
+    } catch (error) {
+      return {
+        success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.professionService.remove(+id);
+    return this.professionService.remove(id);
   }
 }
