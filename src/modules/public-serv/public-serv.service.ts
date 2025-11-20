@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreatePublicServDto, } from './dto/create-public-serv.dto';
+import { CreatePublicServDto } from './dto/create-public-serv.dto';
 import { UpdatePublicServDto } from './dto/update-public-serv.dto';
 
 @Injectable()
@@ -16,7 +16,7 @@ export class PublicServService {
       return {
         success: true,
         statusCode: HttpStatus.OK,
-        message: 'Advsior is deleted successfully',
+        message: 'Public Serve is deleted successfully',
         data: result,
       };
     } catch (error) {
@@ -28,8 +28,44 @@ export class PublicServService {
     }
   }
 
-  findAll() {
-    return `This action returns all publicServ`;
+  async findAll(page: number, limit: number) {
+    try {
+      const [result, totalCount] = await this.prisma.$transaction([
+        // Implement Pagination
+        this.prisma.publicServPrivateWealth.findMany({
+          include: {
+            sector: true,
+          },
+          take: limit,
+          skip: (page - 1) * limit,
+        }),
+
+        // Count the records
+        this.prisma.publicServPrivateWealth.count(),
+      ]);
+
+      // Calculate total pages
+      const totalPages = Math.ceil(totalCount / limit);
+
+      return {
+        success: true,
+        statusCode: HttpStatus.OK,
+        message: 'All Public Serves are retrieved successfully',
+        metaData: {
+          currentPage: page,
+          totalPages,
+          totalCount,
+          limit,
+        },
+        data: result,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 
   findOne(id: number) {

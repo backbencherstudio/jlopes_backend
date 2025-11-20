@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreatePublicServDto } from './dto/create-public-serv.dto';
@@ -32,9 +33,20 @@ export class PublicServController {
     }
   }
 
+  @ApiOperation({ summary: 'Get all  public servs' })
   @Get()
-  findAll() {
-    return this.publicServService.findAll();
+  async findAll(@Query() query: any) {
+    try {
+      const page = parseInt(query.page) || 1;
+      const limit = parseInt(query.limit) || 4;
+      return this.publicServService.findAll(page, limit);
+    } catch (error) {
+      return {
+        success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 
   @Get(':id')
