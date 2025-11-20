@@ -49,21 +49,48 @@ export class PublicServController {
     }
   }
 
+  @ApiOperation({ summary: 'Get single public serv' })
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.publicServService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    try {
+      return await this.publicServService.findOne(id);
+    } catch (error) {
+      return {
+        success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 
+  @ApiOperation({ summary: 'Update public serv' })
   @Patch(':id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updatePublicServDto: UpdatePublicServDto,
   ) {
-    return this.publicServService.update(+id, updatePublicServDto);
+    try {
+      return await this.publicServService.update(id, updatePublicServDto);
+    } catch (error) {
+      return {
+        success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 
+  @ApiOperation({ summary: 'Delete public serv' })
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.publicServService.remove(+id);
+  async remove(@Param('id') id: string) {
+    try {
+      return await this.publicServService.remove(id);
+    } catch (error) {
+      return {
+        success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 }

@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { ConflictException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreatePublicServDto } from './dto/create-public-serv.dto';
 import { UpdatePublicServDto } from './dto/update-public-serv.dto';
@@ -9,6 +9,16 @@ export class PublicServService {
 
   async create(createPublicServDto: CreatePublicServDto) {
     try {
+      const isPublicServExists =
+        await this.prisma.publicServPrivateWealth.findUnique({
+          where: {
+            email: createPublicServDto.email,
+          },
+        });
+      if (isPublicServExists) {
+        throw new ConflictException('Public Serve already exists');
+      }
+
       const result = await this.prisma.publicServPrivateWealth.create({
         data: createPublicServDto,
       });
@@ -16,7 +26,7 @@ export class PublicServService {
       return {
         success: true,
         statusCode: HttpStatus.OK,
-        message: 'Public Serve is deleted successfully',
+        message: 'Public Serve is created successfully',
         data: result,
       };
     } catch (error) {
@@ -68,15 +78,95 @@ export class PublicServService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} publicServ`;
+  async findOne(id: string) {
+    try {
+      const result = await this.prisma.publicServPrivateWealth.findUnique({
+        where: {
+          id,
+        },
+      });
+
+      return {
+        success: true,
+        statusCode: HttpStatus.OK,
+        message: 'Public Serve is retrieved successfully',
+        data: result,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 
-  update(id: number, updatePublicServDto: UpdatePublicServDto) {
-    return `This action updates a #${id} publicServ`;
+  async update(id: string, updatePublicServDto: UpdatePublicServDto) {
+    try {
+      const isPublicServExists =
+        await this.prisma.publicServPrivateWealth.findUnique({
+          where: {
+            id,
+          },
+        });
+      if (!isPublicServExists) {
+        throw new ConflictException('Public Serve does not exist');
+      }
+
+      const result = await this.prisma.publicServPrivateWealth.update({
+        where: {
+          id,
+        },
+        data: {
+          ...updatePublicServDto,
+        },
+      });
+
+      return {
+        success: true,
+        statusCode: HttpStatus.OK,
+        message: 'Public Serve is updated successfully',
+        data: result,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} publicServ`;
+  async remove(id: string) {
+    try {
+      const isPublicServExists =
+        await this.prisma.publicServPrivateWealth.findUnique({
+          where: {
+            id,
+          },
+        });
+      if (!isPublicServExists) {
+        throw new ConflictException('Public Serve does not exist');
+      }
+
+      const result = await this.prisma.publicServPrivateWealth.delete({
+        where: {
+          id,
+        },
+      });
+
+      return {
+        success: true,
+        statusCode: HttpStatus.OK,
+        message: 'Public Serve is removed successfully',
+        data: result,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error?.message || 'Something went wrong',
+      };
+    }
   }
 }
