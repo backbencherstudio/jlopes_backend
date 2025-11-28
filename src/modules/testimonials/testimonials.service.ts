@@ -76,13 +76,13 @@ export class TestimonialsService {
     }
   }
 
-  async findAllTestimonials(page: number, limit: number) {
+  async findAllTestimonials() {
     try {
       const [result, totalCount] = await this.prisma.$transaction([
         // Implement Pagination
         this.prisma.testimonial.findMany({
-          take: limit,
-          skip: (page - 1) * limit,
+          // take: limit,
+          // skip: (page - 1) * limit,
         }),
 
         // Count the records
@@ -90,18 +90,18 @@ export class TestimonialsService {
       ]);
 
       // Calculate total page
-      const totalPages = Math.ceil(totalCount / limit);
+      const totalPages = Math.ceil(totalCount / 0);
 
       return {
         success: true,
         statusCode: HttpStatus.CREATED,
         message: 'All Testimonials are retrieved successfully',
-        metaData: {
-          currentPage: page,
-          totalPages,
-          totalCount,
-          limit,
-        },
+        // metaData: {
+        //   currentPage: page,
+        //   totalPages,
+        //   totalCount,
+        //   limit,
+        // },
         data: result,
       };
     } catch (error) {

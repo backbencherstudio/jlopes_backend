@@ -48,9 +48,9 @@ export class OurTeamPageController {
   @Get()
   async findAll(@Query() query: any) {
     try {
-      const page = parseInt(query.page) || 1;
-      const limit = parseInt(query.limit) || 3;
-      return await this.ourTeamPageService.findAll(page, limit);
+      // const page = parseInt(query.page) || 1;
+      // const limit = parseInt(query.limit) || 3;
+      return await this.ourTeamPageService.findAll();
     } catch (error) {
       return {
         success: false,

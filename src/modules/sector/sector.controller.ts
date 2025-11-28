@@ -37,9 +37,7 @@ export class SectorController {
   @Get()
   async findAll(@Query() query: any) {
     try {
-      const page = parseInt(query.page) || 1;
-      const limit = parseInt(query.limit) || 4;
-      return await this.sectorService.findAllSectors(page, limit);
+      return await this.sectorService.findAllSectors();
     } catch (error) {
       return {
         success: false,

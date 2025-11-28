@@ -33,13 +33,27 @@ export class PublicServController {
     }
   }
 
-  @ApiOperation({ summary: 'Get all  public servs' })
+  // @ApiOperation({ summary: 'Get all  public servs' })
+  // @Get()
+  // async findAll(@Query() query: any) {
+  //   try {
+  //     const page = parseInt(query.page) || 1;
+  //     const limit = parseInt(query.limit) || 4;
+  //     return this.publicServService.findAll(page, limit);
+  //   } catch (error) {
+  //     return {
+  //       success: false,
+  //       statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+  //       message: error?.message || 'Something went wrong',
+  //     };
+  //   }
+  // }
+
+    @ApiOperation({ summary: 'Get all  public servs' })
   @Get()
   async findAll(@Query() query: any) {
     try {
-      const page = parseInt(query.page) || 1;
-      const limit = parseInt(query.limit) || 4;
-      return this.publicServService.findAll(page, limit);
+      return this.publicServService.findAll();
     } catch (error) {
       return {
         success: false,

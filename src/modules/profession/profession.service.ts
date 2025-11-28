@@ -42,13 +42,12 @@ export class ProfessionService {
     }
   }
 
-  async findAll(page: number, limit: number) {
+  async findAll() {
     try {
       const [result, totalCount] = await this.prisma.$transaction([
         // Implement pagination
         this.prisma.profession.findMany({
-          take: limit,
-          skip: (page - 1) * limit,
+
         }),
 
         // Count the records
@@ -58,19 +57,11 @@ export class ProfessionService {
       // const result = await this.prisma.profession.findMany();
       // const totalCount = await this.prisma.profession.count();
 
-      // Calculate total pages
-      const totalPages = Math.ceil(totalCount / limit);
 
       return {
         success: true,
         statusCode: HttpStatus.OK,
         message: 'All Professors are retrieved successfully',
-        metaData: {
-          currentPage: page,
-          totalPages,
-          totalCount,
-          limit,
-        },
         data: result,
       };
     } catch (error) {

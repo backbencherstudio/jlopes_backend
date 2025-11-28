@@ -52,9 +52,9 @@ export class TestimonialsController {
   @Get()
   async findAll(@Query() query: any) {
     try {
-      const page = parseInt(query.page) || 1;
-      const limit = parseInt(query.limit) || 3;
-      return await this.testimonialsService.findAllTestimonials(page, limit);
+      // const page = parseInt(query.page) || 1;
+      // const limit = parseInt(query.limit) || 3;
+      return await this.testimonialsService.findAllTestimonials();
     } catch (error) {
       return {
         success: false,

@@ -41,31 +41,24 @@ export class SectorService {
     }
   }
 
-  async findAllSectors(page: number, limit: number) {
+  async findAllSectors() {
     try {
       const [result, totalCount] = await this.prisma.$transaction([
         // Implement Pagination
         this.prisma.sector.findMany({
-          take: limit,
-          skip: (page - 1) * limit,
+
         }),
 
         // Count the records
         this.prisma.sector.count(),
       ]);
 
-      // Calculate total pages
-      const totalPages = Math.ceil(totalCount / limit);
-
       return {
         success: true,
         statusCode: HttpStatus.OK,
         message: 'All sectors are retrieved successfully',
         metaData: {
-          currentPage: page,
-          totalPages,
           totalCount,
-          limit,
         },
         data: result,
       };

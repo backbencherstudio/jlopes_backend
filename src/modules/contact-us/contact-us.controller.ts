@@ -12,7 +12,7 @@ export class ContactUsController {
     return this.contactUsService.create(createContactUsDto);
   }
 
-  @Get()
+  @Get("all")
   findAll() {
     return this.contactUsService.findAll();
   }
@@ -29,6 +29,6 @@ export class ContactUsController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.contactUsService.remove(+id);
+    return this.contactUsService.remove(id);
   }
 }

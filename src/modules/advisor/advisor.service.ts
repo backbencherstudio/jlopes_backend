@@ -61,7 +61,7 @@ export class AdvisorService {
     }
   }
 
-  async findAll(page: number, limit: number) {
+  async findAll() {
     try {
       const [result, totalCount] = await this.prisma.$transaction([
         // Implement pagination
@@ -72,8 +72,8 @@ export class AdvisorService {
           orderBy: {
             created_at: 'desc',
           },
-          take: limit,
-          skip: (page - 1) * limit,
+          // take: limit,
+          // skip: (page - 1) * limit,
         }),
 
         // Count the records
@@ -81,18 +81,18 @@ export class AdvisorService {
       ]);
 
       // Calculate total pages
-      const totalPages = Math.ceil(totalCount / limit);
+      const totalPages = Math.ceil(totalCount / 0); // limit is 0 for now
 
       return {
         success: true,
         statusCode: HttpStatus.OK,
         message: 'All advisors are retrieved successfully',
-        metaData: {
-          currentPage: page,
-          totalPages,
-          totalCount,
-          limit,
-        },
+        // metaData: {
+        //   currentPage: page,
+        //   totalPages,
+        //   totalCount,
+        //   limit,
+        // },
         data: result,
       };
     } catch (error) {
