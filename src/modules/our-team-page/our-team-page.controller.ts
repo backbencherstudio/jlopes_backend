@@ -22,27 +22,27 @@ import { OurTeamPageService } from './our-team-page.service';
 export class OurTeamPageController {
   constructor(private readonly ourTeamPageService: OurTeamPageService) {}
 
-  @ApiOperation({ summary: 'Create a team member' })
-  @Post()
-  @UseInterceptors(
-    FileInterceptor('image', {
-      storage: memoryStorage(),
-    }),
-  )
-  async create(
-    @Body() data: CreateOurTeamPageDto,
-    @UploadedFile() image: Express.Multer.File,
-  ) {
-    try {
-      return await this.ourTeamPageService.create(data, image);
-    } catch (error) {
-      return {
-        success: false,
-        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
-        message: error?.message || 'Something went wrong',
-      };
-    }
+@ApiOperation({ summary: 'Create a team member' })
+@Post()
+@UseInterceptors(
+  FileInterceptor('image', {
+    storage: memoryStorage(),
+  }),
+)
+async create(
+  @Body() data: CreateOurTeamPageDto,
+  @UploadedFile() image: Express.Multer.File,
+) {
+  try {
+    return await this.ourTeamPageService.create(data, image);
+  } catch (error) {
+    return {
+      success: false,
+      statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      message: error?.message || 'Something went wrong',
+    };
   }
+}
 
   @ApiOperation({ summary: 'Get all team members' })
   @Get()

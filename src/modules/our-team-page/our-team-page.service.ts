@@ -10,53 +10,52 @@ import { UpdateOurTeamPageDto } from './dto/update-our-team-page.dto';
 export class OurTeamPageService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(
-    createTeamDTO: CreateOurTeamPageDto,
-    image: Express.Multer.File,
-  ) {
-    try {
-      const data: any = {};
-      if (createTeamDTO.name) {
-        data.name = createTeamDTO.name;
-      }
-      if (createTeamDTO.title) {
-        data.title = createTeamDTO.title;
-      }
-      if (createTeamDTO.description) {
-        data.description = createTeamDTO.description;
-      }
+async create(createTeamDTO: CreateOurTeamPageDto, image: Express.Multer.File) {
+  try {
+    const data: any = {
+      name: createTeamDTO.name,
+      title: createTeamDTO.title,
+      description: createTeamDTO.description,
+    };
 
-      if (image) {
-        // upload file
-        const filename = `${StringHelper.randomString()}${image.originalname}`;
-        await SojebStorage.put(
-          appConfig().storageUrl.avatar + filename,
-          image.buffer,
-        );
-
-        data.avatar = filename;
+    if (createTeamDTO.socialLinks) {
+      try {
+        data.socialLinks = typeof createTeamDTO.socialLinks === 'string' 
+          ? JSON.parse(createTeamDTO.socialLinks)  
+          : createTeamDTO.socialLinks;        
+      } catch (error) {
+        throw new Error('Invalid JSON format for socialLinks');
       }
-
-      const result = await this.prisma.team.create({
-        data: {
-          ...data,
-        },
-      });
-
-      return {
-        success: true,
-        statusCode: HttpStatus.CREATED,
-        message: 'Team member is created successfully',
-        data: result,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
-        message: error?.message || 'Something went wrong',
-      };
     }
-  }
+
+  if (image) {
+      const filename = `${StringHelper.randomString()}${image.originalname}`;
+      await SojebStorage.put(
+        appConfig().storageUrl.avatar + filename,
+        image.buffer,
+      );
+      data.avatar = filename;
+    }
+
+    const url = SojebStorage.url(appConfig().storageUrl.avatar)  + data.avatar;
+
+    // Create team in the database
+    const result = await this.prisma.team.create({ data});
+
+    return {
+      success: true,
+      statusCode: HttpStatus.CREATED,
+      message: 'Team member created successfully',
+      data: result,
+      url: url,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      statusCode: error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      message: error?.message || 'Something went wrong',
+    };
+  }}
 
   async findAll() {
     try {
